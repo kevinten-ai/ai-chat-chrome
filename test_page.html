@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI助手扩展测试页面</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    .test-button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    .test-button:hover {
+      background: #5a67d8;
+    }
+    .status {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      background: #f0f0f0;
+    }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+    .info { background: #d1ecf1; color: #0c5460; }
+  </style>
+</head>
+<body>
+  <h1>AI助手扩展测试页面</h1>
+
+  <div class="test-section">
+    <h2>扩展状态检查</h2>
+    <button class="test-button" onclick="checkExtensionStatus()">检查扩展状态</button>
+    <div id="extension-status" class="status info">点击按钮检查扩展是否已安装并正常工作</div>
+  </div>
+
+  <div class="test-section">
+    <h2>消息传递测试</h2>
+    <button class="test-button" onclick="testMessagePassing()">测试消息传递</button>
+    <div id="message-status" class="status info">测试与background script的通信</div>
+  </div>
+
+  <div class="test-section">
+    <h2>配置测试</h2>
+    <button class="test-button" onclick="testConfigAccess()">测试配置访问</button>
+    <div id="config-status" class="status info">测试配置读取和存储</div>
+  </div>
+
+  <div class="test-section">
+    <h2>对话历史测试</h2>
+    <button class="test-button" onclick="testChatHistory()">测试对话历史</button>
+    <div id="history-status" class="status info">测试对话历史的读取和存储</div>
+  </div>
+
+  <div class="test-section">
+    <h2>AI API测试</h2>
+    <div style="margin-bottom: 10px;">
+      <input type="text" id="test-api-key" placeholder="输入API密钥进行测试" style="padding: 8px; width: 200px; margin-right: 10px;">
+      <select id="test-service" style="padding: 8px;">
+        <option value="openai">OpenAI</option>
+        <option value="claude">Claude</option>
+        <option value="deepseek">DeepSeek</option>
+      </select>
+    </div>
+    <button class="test-button" onclick="testAIAPI()">测试AI API连接</button>
+    <div id="api-status" class="status info">测试AI API连接和响应</div>
+  </div>
+
+  <div class="test-section">
+    <h2>UI测试</h2>
+    <p>如果扩展正常工作，应该能在页面右下角看到AI助手按钮。</p>
+    <button class="test-button" onclick="triggerChatUI()">手动触发聊天界面</button>
+    <div id="ui-status" class="status info">手动触发聊天界面显示</div>
+  </div>
+
+  <script>
+    function updateStatus(elementId, message, type = 'info') {
+      const element = document.getElementById(elementId);
+      element.textContent = message;
+      element.className = `status ${type}`;
+    }
+
+    function checkExtensionStatus() {
+      if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id) {
+        updateStatus('extension-status', `扩展已安装，ID: ${chrome.runtime.id}`, 'success');
+      } else {
+        updateStatus('extension-status', '扩展未安装或未启用', 'error');
+      }
+    }
+
+    function testMessagePassing() {
+      if (!chrome.runtime || !chrome.runtime.sendMessage) {
+        updateStatus('message-status', 'Chrome runtime API不可用', 'error');
+        return;
+      }
+
+      chrome.runtime.sendMessage({ type: 'GET_CONFIG' }, response => {
+        if (chrome.runtime.lastError) {
+          updateStatus('message-status', `消息传递失败: ${chrome.runtime.lastError.message}`, 'error');
+          return;
+        }
+
+        if (response && response.success) {
+          updateStatus('message-status', '消息传递成功，配置访问正常', 'success');
+        } else {
+          updateStatus('message-status', `消息传递成功但响应异常: ${response?.error || '未知错误'}`, 'error');
+        }
+      });
+    }
+
+    function testConfigAccess() {
+      if (!chrome.runtime || !chrome.runtime.sendMessage) {
+        updateStatus('config-status', 'Chrome runtime API不可用', 'error');
+        return;
+      }
+
+      // Test setting config
+      chrome.runtime.sendMessage({
+        type: 'SET_CONFIG',
+        payload: { testKey: 'testValue', testTimestamp: Date.now() }
+      }, setResponse => {
+        if (chrome.runtime.lastError) {
+          updateStatus('config-status', `设置配置失败: ${chrome.runtime.lastError.message}`, 'error');
+          return;
+        }
+
+        if (setResponse && setResponse.success) {
+          // Test getting config
+          chrome.runtime.sendMessage({ type: 'GET_CONFIG' }, getResponse => {
+            if (chrome.runtime.lastError) {
+              updateStatus('config-status', `获取配置失败: ${chrome.runtime.lastError.message}`, 'error');
+              return;
+            }
+
+            if (getResponse && getResponse.success) {
+              updateStatus('config-status', '配置读写功能正常', 'success');
+            } else {
+              updateStatus('config-status', `获取配置响应异常: ${getResponse?.error || '未知错误'}`, 'error');
+            }
+          });
+        } else {
+          updateStatus('config-status', `设置配置响应异常: ${setResponse?.error || '未知错误'}`, 'error');
+        }
+      });
+    }
+
+    function testChatHistory() {
+      if (!chrome.runtime || !chrome.runtime.sendMessage) {
+        updateStatus('history-status', 'Chrome runtime API不可用', 'error');
+        return;
+      }
+
+      chrome.runtime.sendMessage({ type: 'GET_CHAT_HISTORY' }, response => {
+        if (chrome.runtime.lastError) {
+          updateStatus('history-status', `获取对话历史失败: ${chrome.runtime.lastError.message}`, 'error');
+          return;
+        }
+
+        if (response && response.success) {
+          const sessions = response.data || [];
+          updateStatus('history-status', `对话历史获取成功，共${sessions.length}个会话`, 'success');
+        } else {
+          updateStatus('history-status', `获取对话历史响应异常: ${response?.error || '未知错误'}`, 'error');
+        }
+      });
+    }
+
+    function testAIAPI() {
+      const apiKey = document.getElementById('test-api-key').value.trim();
+      const service = document.getElementById('test-service').value;
+
+      if (!apiKey) {
+        updateStatus('api-status', '请输入API密钥', 'error');
+        return;
+      }
+
+      if (!chrome.runtime || !chrome.runtime.sendMessage) {
+        updateStatus('api-status', 'Chrome runtime API不可用', 'error');
+        return;
+      }
+
+      updateStatus('api-status', '正在测试AI API连接...', 'info');
+
+      // First set test config
+      chrome.runtime.sendMessage({
+        type: 'SET_CONFIG',
+        payload: {
+          aiService: service,
+          aiApiKey: apiKey,
+          aiModel: service === 'openai' ? 'gpt-3.5-turbo' :
+                   service === 'claude' ? 'claude-3-sonnet-20240229' : 'deepseek-chat',
+          aiTemperature: 0.7,
+          aiMaxTokens: 1024,
+          showNotifications: false
+        }
+      }, setResponse => {
+        if (chrome.runtime.lastError || !setResponse?.success) {
+          updateStatus('api-status', '设置测试配置失败', 'error');
+          return;
+        }
+
+        // Now test AI API
+        chrome.runtime.sendMessage({
+          type: 'AI_CHAT_REQUEST',
+          payload: { message: 'Hello, this is a test message from the extension test page.' }
+        }, aiResponse => {
+          if (chrome.runtime.lastError) {
+            updateStatus('api-status', `AI API测试失败: ${chrome.runtime.lastError.message}`, 'error');
+            return;
+          }
+
+          if (aiResponse && aiResponse.success) {
+            updateStatus('api-status', 'AI API连接成功，收到响应', 'success');
+          } else {
+            updateStatus('api-status', `AI API测试失败: ${aiResponse?.error || '未知错误'}`, 'error');
+          }
+        });
+      });
+    }
+
+    function triggerChatUI() {
+      if (!chrome.runtime || !chrome.runtime.sendMessage) {
+        updateStatus('ui-status', 'Chrome runtime API不可用', 'error');
+        return;
+      }
+
+      // Try to open chat UI
+      chrome.runtime.sendMessage({ type: 'OPEN_CHAT', payload: {} }, response => {
+        if (chrome.runtime.lastError) {
+          updateStatus('ui-status', `触发聊天界面失败: ${chrome.runtime.lastError.message}`, 'error');
+          return;
+        }
+
+        if (response && response.success) {
+          updateStatus('ui-status', '聊天界面触发成功，请查看页面右下角', 'success');
+        } else {
+          updateStatus('ui-status', `聊天界面触发响应异常: ${response?.error || '未知错误'}`, 'error');
+        }
+      });
+    }
+
+    // Auto-check extension status on page load
+    window.addEventListener('load', () => {
+      setTimeout(checkExtensionStatus, 1000);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "AI页面助手",
+  "version": "1.0.0",
+  "version_name": "1.0.0-stable",
+  "description": "基于Chrome扩展的AI聊天助手，提供悬浮弹窗界面和多模型支持",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "notifications"
+  ],
+  "host_permissions": [
+    "https://api.openai.com/*",
+    "https://api.anthropic.com/*",
+    "https://api.deepseek.com/*",
+    "https://platform.openai.com/*",
+    "https://console.anthropic.com/*",
+    "https://platform.deepseek.com/*"
+  ],
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content.js"],
+      "css": ["src/styles.css"],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "src/popup.html",
+    "default_title": "AI助手",
+    "default_icon": "assets/icon.svg"
+  },
+  "options_page": "src/options.html",
+  "icons": {
+    "16": "assets/icon.svg",
+    "32": "assets/icon.svg",
+    "48": "assets/icon.svg",
+    "128": "assets/icon.svg"
+  }
+}

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI助手</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 320px;
+      min-height: 400px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .popup-container {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      min-height: 400px;
+    }
+
+    .popup-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .popup-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .popup-subtitle {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    .status-section {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .status-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .status-label {
+      opacity: 0.9;
+    }
+
+    .status-value {
+      font-weight: 500;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 8px;
+    }
+
+    .status-dot.ready {
+      background: #10b981;
+    }
+
+    .status-dot.error {
+      background: #ef4444;
+    }
+
+    .status-dot.warning {
+      background: #f59e0b;
+    }
+
+    .quick-actions {
+      margin-bottom: 24px;
+    }
+
+    .action-btn {
+      width: 100%;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .action-btn:last-child {
+      margin-bottom: 0;
+    }
+
+    .action-btn.primary {
+      background: white;
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .action-btn.primary:hover {
+      background: #f8fafc;
+    }
+
+    .recent-chats {
+      flex: 1;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chat-list {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .chat-item {
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      font-size: 13px;
+    }
+
+    .chat-item:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .chat-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .chat-time {
+      opacity: 0.7;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .chat-preview {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: 0.9;
+    }
+
+    .no-chats {
+      text-align: center;
+      padding: 20px;
+      opacity: 0.7;
+      font-style: italic;
+    }
+
+    .footer {
+      text-align: center;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .footer-text {
+      font-size: 12px;
+      opacity: 0.7;
+      margin-bottom: 8px;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .footer-link {
+      color: white;
+      text-decoration: none;
+      font-size: 12px;
+      opacity: 0.8;
+      transition: opacity 0.2s ease;
+    }
+
+    .footer-link:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Scrollbar styling */
+    .chat-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .chat-list::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+    }
+
+    .chat-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 2px;
+    }
+
+    .chat-list::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="popup-container">
+    <div class="popup-header">
+      <div class="popup-title">
+        <span>🤖</span>
+        AI助手
+      </div>
+      <div class="popup-subtitle">智能对话助手</div>
+    </div>
+
+    <div class="status-section">
+      <div class="status-item">
+        <span class="status-label">
+          <span class="status-dot" id="api-status-dot"></span>
+          API状态
+        </span>
+        <span class="status-value" id="api-status">检查中...</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">当前模型</span>
+        <span class="status-value" id="current-model">-</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">对话数量</span>
+        <span class="status-value" id="chat-count">-</span>
+      </div>
+    </div>
+
+    <div class="quick-actions">
+      <button class="action-btn primary" id="open-chat">
+        <span>💬</span>
+        打开聊天界面
+      </button>
+      <button class="action-btn" id="open-options">
+        <span>⚙️</span>
+        打开设置
+      </button>
+      <button class="action-btn" id="new-chat">
+        <span>✨</span>
+        新建对话
+      </button>
+    </div>
+
+    <div class="recent-chats">
+      <div class="section-title">
+        <span>🕐</span>
+        最近对话
+      </div>
+      <div class="chat-list" id="chat-list">
+        <div class="no-chats" id="no-chats">暂无对话记录</div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="footer-text">AI助手 v1.0.0</div>
+      <div class="footer-links">
+        <a href="#" class="footer-link" id="open-github">GitHub</a>
+        <a href="#" class="footer-link" id="open-docs">文档</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

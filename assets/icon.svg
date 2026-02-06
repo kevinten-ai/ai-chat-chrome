@@ -1,0 +1,36 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="60" fill="url(#bg)" stroke="#ffffff" stroke-width="4"/>
+
+  <!-- Chat bubble -->
+  <g transform="translate(32, 32)">
+    <!-- Bubble body -->
+    <path d="M32 16 C32 7.16 24.84 0 16 0 C7.16 0 0 7.16 0 16 L0 48 L16 48 L24 56 L32 48 Z"
+          fill="#ffffff" opacity="0.9"/>
+
+    <!-- AI dots -->
+    <circle cx="8" cy="20" r="2" fill="#667eea"/>
+    <circle cx="16" cy="20" r="2" fill="#667eea" opacity="0.7"/>
+    <circle cx="24" cy="20" r="2" fill="#667eea" opacity="0.4"/>
+
+    <!-- Sparkles -->
+    <g opacity="0.8">
+      <circle cx="40" cy="12" r="1.5" fill="#ffffff"/>
+      <circle cx="52" cy="8" r="1" fill="#ffffff"/>
+      <circle cx="44" cy="24" r="1.2" fill="#ffffff"/>
+    </g>
+  </g>
+
+  <!-- AI brain waves -->
+  <g opacity="0.6">
+    <path d="M20 64 Q20 50 35 50" stroke="#ffffff" stroke-width="2" fill="none"/>
+    <path d="M108 64 Q108 78 93 78" stroke="#ffffff" stroke-width="2" fill="none"/>
+  </g>
+</svg>
