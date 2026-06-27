@@ -102,7 +102,7 @@ export default function EngineComparisonTable({ results }: Props) {
       };
     }, [comparisons, buResults, paResults]);
 
-  // Need at least one result from either engine to show comparison
+  // Need at least one result from either engine to show comparison.
   if (buResults.length === 0 && paResults.length === 0) return null;
 
   return (

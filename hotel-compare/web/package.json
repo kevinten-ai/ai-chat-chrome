@@ -5,8 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "type-check": "tsc --noEmit",
     "start": "echo 'This project uses static export (output: export). Serve the dist/ folder with any static server.' && exit 1",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "npm run lint"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.99.2",
