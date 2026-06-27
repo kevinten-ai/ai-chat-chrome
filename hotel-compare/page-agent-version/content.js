@@ -14,6 +14,9 @@
 /** Counter for agent steps within the current execution */
 let stepCounter = 0;
 
+const DEFAULT_ARK_BASE_URL = 'https://ark.cn-beijing.volces.com/api/coding/v3';
+const DEFAULT_ARK_CHAT_MODEL = 'doubao-seed-2-0-code-preview-260215';
+
 // ---------------------------------------------------------------------------
 // Message listener — from background.js
 // ---------------------------------------------------------------------------
@@ -54,7 +57,12 @@ async function runPageAgent(task, platform) {
 // Inject page-agent into the page context and run
 // ---------------------------------------------------------------------------
 
-function injectAndRun(task, platform) {
+async function injectAndRun(task, platform) {
+  const pageAgentConfig = await getPageAgentConfig();
+  if (!pageAgentConfig.apiKey) {
+    throw new Error('ARK_API_KEY is not configured in chrome.storage.local');
+  }
+
   return new Promise((resolve, reject) => {
     // Listen for messages from the injected page-context script
     window.addEventListener('message', function handler(event) {
@@ -81,9 +89,9 @@ function injectAndRun(task, platform) {
           try {
             const agent = new window.PageAgent.PageAgentCore({
               provider: 'openai',
-              model: 'glm-4-plus',
-              apiKey: '${getApiKey()}',
-              baseURL: 'https://open.bigmodel.cn/api/paas/v4',
+              model: ${JSON.stringify(pageAgentConfig.model)},
+              apiKey: ${JSON.stringify(pageAgentConfig.apiKey)},
+              baseURL: ${JSON.stringify(pageAgentConfig.baseUrl)},
               maxSteps: 25,
               language: 'zh-CN',
             });
@@ -155,9 +163,29 @@ function handlePageAgentStep(platform, step) {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function getApiKey() {
-  // TODO: 从 chrome.storage 读取用户配置的 API Key
-  return 'YOUR_ZHIPUAI_API_KEY';
+function getPageAgentConfig() {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get([
+      'ARK_API_KEY',
+      'ARK_BASE_URL',
+      'ARK_CHAT_MODEL',
+      'PAGE_AGENT_API_KEY',
+      'PAGE_AGENT_BASE_URL',
+      'PAGE_AGENT_MODEL',
+    ], (items) => {
+      if (chrome.runtime.lastError) {
+        reject(new Error(chrome.runtime.lastError.message));
+        return;
+      }
+
+      const baseUrl = items.ARK_BASE_URL || items.PAGE_AGENT_BASE_URL || DEFAULT_ARK_BASE_URL;
+      resolve({
+        apiKey: items.ARK_API_KEY || items.PAGE_AGENT_API_KEY || '',
+        baseUrl: baseUrl.replace(/\/+$/, ''),
+        model: items.ARK_CHAT_MODEL || items.PAGE_AGENT_MODEL || DEFAULT_ARK_CHAT_MODEL,
+      });
+    });
+  });
 }
 
 function log(platform, text) {

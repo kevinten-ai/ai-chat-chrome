@@ -39,9 +39,6 @@ export default function EngineComparisonTable({ results }: Props) {
     [results]
   );
 
-  // Need at least one result from each engine to show comparison
-  if (buResults.length === 0 && paResults.length === 0) return null;
-
   const comparisons: PlatformComparison[] = useMemo(() => {
     return PLATFORMS.map((platform) => {
       const buResult = buResults.find((r) => r.platform === platform);
@@ -104,6 +101,9 @@ export default function EngineComparisonTable({ results }: Props) {
         overallWinner,
       };
     }, [comparisons, buResults, paResults]);
+
+  // Need at least one result from either engine to show comparison
+  if (buResults.length === 0 && paResults.length === 0) return null;
 
   return (
     <div className="mt-8">

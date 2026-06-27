@@ -25,23 +25,28 @@ class LLMConfigError(RuntimeError):
     """LLM 配置缺失或无效。"""
 
 
+DEFAULT_ARK_BASE_URL = "https://ark.cn-beijing.volces.com/api/coding/v3"
+DEFAULT_ARK_CHAT_MODEL = "doubao-seed-2-0-code-preview-260215"
+
+
+def _env(name: str) -> str | None:
+    value = os.getenv(name)
+    return value.strip() if value and value.strip() else None
+
+
 # Re-export for consumers that want a centralized LLM factory
 def create_default_llm(model: str | None = None, base_url: str | None = None) -> ChatOpenAI:
-    """Create a ChatOpenAI instance with project defaults."""
-    resolved_model = model or os.getenv("OPENAI_MODEL")
-    resolved_base_url = base_url or os.getenv("OPENAI_BASE_URL")
-    api_key = os.getenv("OPENAI_API_KEY")
+    """Create an OpenAI-compatible ChatOpenAI instance using Ark defaults."""
+    resolved_model = model or _env("ARK_CHAT_MODEL") or DEFAULT_ARK_CHAT_MODEL
+    resolved_base_url = base_url or _env("ARK_BASE_URL") or DEFAULT_ARK_BASE_URL
+    api_key = _env("ARK_API_KEY")
 
-    if not resolved_model:
-        raise LLMConfigError("Missing OPENAI_MODEL environment variable")
-    if not resolved_base_url:
-        raise LLMConfigError("Missing OPENAI_BASE_URL environment variable")
     if not api_key:
-        raise LLMConfigError("Missing OPENAI_API_KEY environment variable")
+        raise LLMConfigError("Missing ARK_API_KEY environment variable")
 
     return ChatOpenAI(
         model=resolved_model,
-        base_url=resolved_base_url,
+        base_url=resolved_base_url.rstrip("/"),
         api_key=api_key,
         dont_force_structured_output=True,
         temperature=0.2,
@@ -109,9 +114,8 @@ async def run_platform_search(
         except Exception as e:
             print(f"  [{config.name}] Context store failed: {e}")
 
-    # Keep Agent params minimal — closer to original working config.
-    # glm-4-plus struggles with complex AgentOutput schemas (45 validation errors
-    # when planning/extra fields are required). Simpler = fewer LLM parse failures.
+    # Keep Agent params minimal. Some OpenAI-compatible chat models struggle with
+    # complex AgentOutput schemas, so simpler output reduces parse failures.
     agent = Agent(
         task=task_prompt,
         llm=llm,

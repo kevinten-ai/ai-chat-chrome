@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "echo 'This project uses static export (output: export). Serve the dist/ folder with any static server.' && exit 1",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.99.2",

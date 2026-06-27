@@ -20,7 +20,7 @@ hotel-compare/
 │   ├── hotel_compare.py        # Core logic: 3 search functions + compare + main
 │   ├── app.py                  # Streamlit UI: input form + progress + results table
 │   ├── requirements.txt        # browser-use, streamlit, langchain-openai, python-dotenv
-│   ├── .env.example            # OPENAI_API_KEY=your-key-here
+│   ├── .env.example            # ARK_API_KEY=your-ark-api-key-here
 │   └── pyproject.toml          # uv project config (python >= 3.11)
 │
 ├── page-agent-version/
@@ -71,7 +71,9 @@ dependencies = [
 
 ```bash
 # hotel-compare/browser-use-version/.env.example
-OPENAI_API_KEY=your-openai-api-key-here
+ARK_API_KEY=your-ark-api-key-here
+ARK_BASE_URL=https://ark.cn-beijing.volces.com/api/coding/v3
+ARK_CHAT_MODEL=doubao-seed-2-0-code-preview-260215
 ```
 
 - [ ] **Step 3: Create requirements.txt**
@@ -620,7 +622,7 @@ git commit -m "feat: add Streamlit UI for hotel comparison"
 ```bash
 cd hotel-compare/browser-use-version
 cp .env.example .env
-# Edit .env and add your OPENAI_API_KEY
+# Edit .env and add your ARK_API_KEY
 ```
 
 - [ ] **Step 2: Run CLI against one platform to verify**
@@ -1200,10 +1202,8 @@ function injectAndRun(task, platform) {
   });
 }
 
-function getApiKey() {
-  // TODO: 从 chrome.storage 读取用户配置的 API Key
-  // 目前硬编码，后续改为配置页面
-  return 'YOUR_API_KEY';
+function getPageAgentConfig() {
+  // 从 chrome.storage.local 读取本地 Ark 配置，不在源码中硬编码 API key。
 }
 
 function log(platform, text) {
@@ -1253,9 +1253,9 @@ git commit -m "feat: add page-agent Chrome extension version"
 3. Click "Load unpacked" → select `hotel-compare/page-agent-version/`
 4. Verify extension icon appears
 
-- [ ] **Step 2: Configure API key**
+- [ ] **Step 2: Configure Ark API key**
 
-Edit `content.js` and replace `YOUR_API_KEY` with a real OpenAI API key. (In a later iteration, this should be moved to a settings page stored in `chrome.storage`.)
+Use `chrome.storage.local` to store `ARK_API_KEY`, `ARK_BASE_URL`, and `ARK_CHAT_MODEL` locally for the unpacked extension. Do not commit a real API key or a hardcoded key placeholder in `content.js`.
 
 - [ ] **Step 3: Test single platform**
 
@@ -1298,7 +1298,7 @@ git commit -m "fix: debug page-agent extension integration"
 
 ```bash
 cd browser-use-version
-cp .env.example .env  # 填入 OPENAI_API_KEY
+cp .env.example .env  # 填入 ARK_API_KEY
 uv sync
 uv run streamlit run app.py
 ```

@@ -30,6 +30,9 @@ from browser_use import Agent, BrowserSession
 
 from agent_factory import create_default_llm
 
+DEFAULT_ARK_BASE_URL = "https://ark.cn-beijing.volces.com/api/coding/v3"
+DEFAULT_ARK_CHAT_MODEL = "doubao-seed-2-0-code-preview-260215"
+
 
 # 最简化测试 prompt — 不使用 platform_config 模板，直接硬编码
 TEST_PROMPTS = {
@@ -101,8 +104,8 @@ TEST_PROMPTS = {
 async def test_single_platform(platform_key: str, hotel: str, checkin: str, checkout: str) -> list[dict[str, Any]]:
     """测试单个平台的 Agent 搜索能力"""
 
-    model = os.getenv("OPENAI_MODEL", "glm-4-plus")
-    base_url = os.getenv("OPENAI_BASE_URL", "https://open.bigmodel.cn/api/paas/v4")
+    model = os.getenv("ARK_CHAT_MODEL") or DEFAULT_ARK_CHAT_MODEL
+    base_url = os.getenv("ARK_BASE_URL") or DEFAULT_ARK_BASE_URL
 
     print(f"\n{'=' * 60}")
     print(f"测试平台: {platform_key}")

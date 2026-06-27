@@ -996,9 +996,9 @@ git push origin main
 2. Set Root Directory: `hotel-compare/browser-use-version`
 3. Railway will auto-detect the Dockerfile
 4. Add Environment Variables:
-   - `OPENAI_API_KEY`
-   - `OPENAI_BASE_URL`
-   - `OPENAI_MODEL`
+   - `ARK_API_KEY`
+   - `ARK_BASE_URL`
+   - `ARK_CHAT_MODEL`
    - `SUPABASE_URL`
    - `SUPABASE_KEY`
 

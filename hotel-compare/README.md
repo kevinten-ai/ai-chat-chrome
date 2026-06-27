@@ -75,7 +75,7 @@ AI Agent 自动操控浏览器，在携程、去哪儿、同程三大平台搜�
 │   任务轮询      多策略重试             统一 Agent 创建          │
 │                                          │                   │
 │  reflection.py   context_store.py    browser-use Agent       │
-│   失败分析        操作上下文存储       Playwright + GLM-4.6V   │
+│   失败分析        操作上下文存储       Playwright + Ark        │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -86,7 +86,7 @@ AI Agent 自动操控浏览器，在携程、去哪儿、同程三大平台搜�
 | **Agent 框架** | browser-use 0.12+ (81k Stars) | 服务端: LLM 解析 DOM → 推理 → Playwright 执行 |
 | **Agent 框架** | page-agent (JS) | 客户端: Chrome Extension 注入页面，直接操控 DOM |
 | **浏览器驱动** | Playwright | 通过 CDP (Chrome DevTools Protocol) WebSocket 控制 Chromium |
-| **LLM** | 智谱 GLM-4.6V-Flash | 免费多模态模型，支持 vision，128K 上下文，OpenAI 兼容 |
+| **LLM** | Volcengine Ark CodingPlan | OpenAI-compatible chat model for browser-use planning |
 | **前端** | Next.js 16 + React 19 + Tailwind 4 | Vercel 部署，3s 轮询实时更新 |
 | **数据库** | Supabase PostgreSQL + Storage | 任务队列 + 步骤日志 + 截图 + Realtime |
 | **Worker** | Python 3.11 + Docker | Railway 托管，headless Chromium |
@@ -317,13 +317,13 @@ hotel-compare/
 
 - Python 3.11+ / Node.js 18+
 - Supabase 项目 (免费)
-- 智谱 API Key ([GLM Coding Plan](https://open.bigmodel.cn/special_area) 免费)
+- Volcengine Ark API Key (CodingPlan, OpenAI-compatible)
 
 ### 1. Worker
 
 ```bash
 cd hotel-compare/browser-use-version
-cp .env.example .env   # 填入 API Key + Supabase 配置
+cp .env.example .env   # 填入 ARK_API_KEY + Supabase 配置
 pip install uv && uv sync
 uv run playwright install chromium
 uv run python worker.py
@@ -344,6 +344,16 @@ npm install && npm run dev
 ### 4. Chrome Extension (可选，用于 page-agent)
 
 Chrome → `chrome://extensions` → 开发者模式 → 加载 `hotel-compare/page-agent-version/`
+
+page-agent 原型只从本地扩展存储读取 Ark 配置，不在源码中内置 key。加载后可在扩展调试控制台设置：
+
+```js
+chrome.storage.local.set({
+  ARK_API_KEY: "your-ark-api-key",
+  ARK_BASE_URL: "https://ark.cn-beijing.volces.com/api/coding/v3",
+  ARK_CHAT_MODEL: "doubao-seed-2-0-code-preview-260215"
+});
+```
 
 ---
 

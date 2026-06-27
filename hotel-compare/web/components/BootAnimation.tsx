@@ -55,7 +55,7 @@ function getBootSequence(platform: string): BootLine[] {
     { text: "  ████████████████████ OK", type: "progress", delay: 2200 },
     { text: "[SYS] Viewport → 1920×1080", type: "normal", delay: 2600 },
     {
-      text: "[NET] Connecting to GLM-4-Plus...",
+      text: "[NET] Connecting to Ark CodingPlan...",
       type: "normal",
       delay: 3000,
     },
