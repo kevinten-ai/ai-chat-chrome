@@ -86,7 +86,7 @@ AI Agent 自动操控浏览器，在携程、去哪儿、同程三大平台搜�
 | **Agent 框架** | browser-use 0.12+ (81k Stars) | 服务端: LLM 解析 DOM → 推理 → Playwright 执行 |
 | **Agent 框架** | page-agent (JS) | 客户端: Chrome Extension 注入页面，直接操控 DOM |
 | **浏览器驱动** | Playwright | 通过 CDP (Chrome DevTools Protocol) WebSocket 控制 Chromium |
-| **LLM** | Volcengine Ark CodingPlan | OpenAI-compatible chat model for browser-use planning |
+| **LLM** | Volcengine Ark Agent Plan | OpenAI-compatible chat model for browser-use planning |
 | **前端** | Next.js 16 + React 19 + Tailwind 4 | Vercel 部署，3s 轮询实时更新 |
 | **数据库** | Supabase PostgreSQL + Storage | 任务队列 + 步骤日志 + 截图 + Realtime |
 | **Worker** | Python 3.11 + Docker | Railway 托管，headless Chromium |
@@ -317,7 +317,7 @@ hotel-compare/
 
 - Python 3.11+ / Node.js 18+
 - Supabase 项目 (免费)
-- Volcengine Ark API Key (CodingPlan, OpenAI-compatible)
+- Volcengine Ark Agent Plan API Key (OpenAI-compatible)
 
 ### 1. Worker
 
@@ -350,7 +350,7 @@ page-agent 原型只从本地扩展存储读取 Ark 配置，不在源码中内�
 ```js
 chrome.storage.local.set({
   ARK_API_KEY: "your-ark-api-key",
-  ARK_BASE_URL: "https://ark.cn-beijing.volces.com/api/coding/v3",
+  ARK_BASE_URL: "https://ark.cn-beijing.volces.com/api/plan/v3",
   ARK_CHAT_MODEL: "doubao-seed-2-0-code-preview-260215"
 });
 ```

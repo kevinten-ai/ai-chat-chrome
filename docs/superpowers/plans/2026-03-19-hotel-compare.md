@@ -72,7 +72,7 @@ dependencies = [
 ```bash
 # hotel-compare/browser-use-version/.env.example
 ARK_API_KEY=your-ark-api-key-here
-ARK_BASE_URL=https://ark.cn-beijing.volces.com/api/coding/v3
+ARK_BASE_URL=https://ark.cn-beijing.volces.com/api/plan/v3
 ARK_CHAT_MODEL=doubao-seed-2-0-code-preview-260215
 ```
 

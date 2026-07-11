@@ -25,7 +25,7 @@ class LLMConfigError(RuntimeError):
     """LLM 配置缺失或无效。"""
 
 
-DEFAULT_ARK_BASE_URL = "https://ark.cn-beijing.volces.com/api/coding/v3"
+DEFAULT_ARK_BASE_URL = "https://ark.cn-beijing.volces.com/api/plan/v3"
 DEFAULT_ARK_CHAT_MODEL = "doubao-seed-2-0-code-preview-260215"
 
 

@@ -89,7 +89,7 @@
 | **Frontend** | Next.js 16, Tailwind CSS, TypeScript | [Vercel](https://vercel.com) |
 | **Database** | Supabase (PostgreSQL + Storage) | [Supabase](https://supabase.com) |
 | **Worker** | Python 3.12, [browser-use](https://github.com/browser-use/browser-use) v0.12, Playwright | [Railway](https://railway.com) |
-| **LLM** | Volcengine Ark CodingPlan (OpenAI-compatible API) | [Volcengine Ark](https://www.volcengine.com/product/ark) |
+| **LLM** | Volcengine Ark Agent Plan (OpenAI-compatible API) | [Volcengine Ark](https://www.volcengine.com/product/ark) |
 
 ```
 hotel-compare/
@@ -230,7 +230,7 @@ CREATE TABLE results (
 | | browser-use（服务端） | page-agent（客户端） |
 |:---|:---|:---|
 | **运行环境** | Python + Playwright（headless Chromium） | Chrome Extension（用户真实浏览器） |
-| **LLM** | Ark CodingPlan (OpenAI-compatible API) | Local Ark config in Chrome storage |
+| **LLM** | Ark Agent Plan (OpenAI-compatible API) | Local Ark config in Chrome storage |
 | **部署方式** | Railway Docker 容器 | 本地 Chrome 安装 |
 | **可观测性** | 截图上传 + step_logs 数据库记录 | Console logs |
 | **反爬能力** | headless 检测风险，需额外指纹伪装 | 真实用户浏览器环境，天然绕过检测 |
